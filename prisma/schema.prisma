@@ -20,6 +20,41 @@ model Workflow {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
+  isActive Boolean @default(true)
+
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  steps Json?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum Role{
+  EMPLOYEE
+  MANAGER
+  ADMIN
+}
+model User{
+  id    String @id @default(uuid())
+  name String
+  email String @unique
+  passwordHash String
+  role Role @default(EMPLOYEE)
+
+  organization Organization[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Organization {
+  id  String @id @default(uuid())
+  name String
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workflows Workflow[]
+
 }
